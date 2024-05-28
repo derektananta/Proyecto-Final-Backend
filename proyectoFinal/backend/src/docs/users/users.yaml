@@ -1,0 +1,253 @@
+paths:
+  /api/users/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                age:
+                  type: integer
+                password:
+                  type: string
+              required:
+                - first_name
+                - last_name
+                - email
+                - age
+                - password
+              example:
+                first_name: "Jhon"
+                last_name: "Doe"
+                email: "JhonDoe@email.com"
+                age: 30
+                password: "ultraSecretpassword"
+      responses:
+        "201":
+          description: User created successfully
+        "400":
+          description: Incomplete or invalid fields
+  /api/users/login:
+    post:
+      summary: Login user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+              example:
+                email: "JhonDoe@email.com"
+                password: "ultraSecretpassword"
+      responses:
+        "200":
+          description: Login successful
+        "400":
+          description: Incomplete or invalid fields
+        "401":
+          description: Invalid credentials
+  /api/users/logout:
+    post:
+      summary: Logout user
+      tags:
+        - Users
+      responses:
+        "200":
+          description: Logout successful
+        "404":
+          description: User not found
+  /api/users/profile:
+    get:
+      summary: Get user profile
+      tags:
+        - Users
+      responses:
+        "200":
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              example:
+                name: "Jhon Doe"
+                email: "JhonDoe@email.com"
+                role: "user"
+        "404":
+          description: User not found
+  /api/users:
+    get:
+      summary: Get all users
+      tags:
+        - Users
+      responses:
+        "200":
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              example:
+                name: "Jhon Doe"
+                email: "JhonDoe@email.com"
+                role: "user"
+        "404":
+          description: No users found
+  /api/users/{userId}:
+    get:
+      summary: Get user by ID
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              example:
+                _id: "Mongo id"
+                first_name: "Jhon"
+                last_name: "Doe"
+                email: "JhonDoe@email.com"
+                age: 30
+                role: "user"
+                carts:
+                  - $ref: "#/components/schemas/Cart"
+                    id: "cartid"
+                password: "ultraSecretpassword"
+                last_connection: "dd/mm/yy"
+        "404":
+          description: User not found
+    put:
+      summary: Update user by ID
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+            required:
+              - email
+              - first_name
+              - last_name
+              - age
+            example:
+              first_name: "Jhon Updated"
+              last_name: "Doe"
+              email: "JhonDoe@email.com"
+              age: 30
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              example:
+                first_name: "Jhon Updated"
+                last_name: "Doe"
+                email: "JhonDoe@email.com"
+                age: 30
+        "404":
+          description: User not found
+    delete:
+      summary: Delete user by ID
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted successfully
+        "404":
+          description: User not found
+  /api/users/clear:
+    delete:
+      summary: Delete inactive users
+      tags:
+        - Users
+      responses:
+        "200":
+          description: Inactive users deleted successfully
+        "400":
+          description: No inactive users found
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Id generated by MongoDB
+        first_name:
+          type: string
+          description: First name of the user
+        last_name:
+          type: string
+          description: Last name of the user
+        email:
+          type: string
+          description: Email address of the user
+        age:
+          type: integer
+          description: Age of the user
+        role:
+          type: string
+          default: user
+          description: Role of the user
+        carts:
+          type: array
+          items:
+            type: string
+          description: List of user's carts
+        password:
+          type: string
+          description: Password of the user
+        last_connection:
+          type: string
+          description: Last connection of the user
+      required:
+        - first_name
+        - last_name
+        - email
+        - age
+        - password
